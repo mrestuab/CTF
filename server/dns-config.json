@@ -1,0 +1,65 @@
+{
+  "domains": {
+    "gis-ctf.local": {
+      "type": "A",
+      "value": "127.0.0.1",
+      "ttl": 300
+    },
+    "api.gis-ctf.local": {
+      "type": "A",
+      "value": "127.0.0.1",
+      "ttl": 300
+    },
+    "backend.gis-ctf.local": {
+      "type": "A",
+      "value": "127.0.0.1",
+      "ttl": 300
+    },
+    "team1.gis-ctf.local": {
+      "type": "A",
+      "value": "192.168.1.101",
+      "ttl": 300
+    },
+    "team2.gis-ctf.local": {
+      "type": "A",
+      "value": "192.168.1.102",
+      "ttl": 300
+    },
+    "team3.gis-ctf.local": {
+      "type": "A",
+      "value": "192.168.1.103",
+      "ttl": 300
+    },
+    "team4.gis-ctf.local": {
+      "type": "A",
+      "value": "192.168.1.104",
+      "ttl": 300
+    },
+    "team5.gis-ctf.local": {
+      "type": "A",
+      "value": "192.168.1.105",
+      "ttl": 300
+    },
+    "ctf.local": {
+      "type": "A",
+      "value": "127.0.0.1",
+      "ttl": 300
+    },
+    "monitor.ctf.local": {
+      "type": "A",
+      "value": "127.0.0.1",
+      "ttl": 300
+    }
+  },
+  "upstreamDNS": [
+    "8.8.8.8",
+    "1.1.1.1",
+    "208.67.222.222"
+  ],
+  "settings": {
+    "enableLogging": true,
+    "enableCache": true,
+    "cacheMaxAge": 3600,
+    "maxCacheEntries": 1000
+  }
+}

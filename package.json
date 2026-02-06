@@ -1,0 +1,51 @@
+{
+  "name": "gis-ctf-application",
+  "version": "1.0.0",
+  "description": "Geographic Information System for Capture The Flag competitions",
+  "main": "index.html",
+  "type": "module",
+  "scripts": {
+    "start": "node server/pingbox.js",
+    "dev": "node server/pingbox.js --dev",
+    "build": "echo 'No build step required for vanilla JS'",
+    "backend": "node server/lemes-backend.js",
+    "dns": "node server/alodek-dns.js",
+    "serve": "npm run start",
+    "test": "echo 'Tests not implemented yet'"
+  },
+  "keywords": [
+    "gis",
+    "ctf",
+    "cybersecurity",
+    "map",
+    "real-time",
+    "javascript",
+    "es6-modules"
+  ],
+  "author": "GIS CTF Team",
+  "license": "MIT",
+  "dependencies": {
+    "compression": "^1.8.1",
+    "cors": "^2.8.5",
+    "express": "^4.18.2",
+    "helmet": "^7.2.0",
+    "mime-types": "^2.1.35",
+    "ws": "^8.14.2"
+  },
+  "devDependencies": {
+    "eslint": "^8.57.0",
+    "nodemon": "^3.0.2"
+  },
+  "engines": {
+    "node": ">=16.0.0",
+    "npm": ">=8.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yourusername/gis-ctf-application.git"
+  },
+  "bugs": {
+    "url": "https://github.com/yourusername/gis-ctf-application/issues"
+  },
+  "homepage": "https://github.com/yourusername/gis-ctf-application#readme"
+}
