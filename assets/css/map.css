@@ -56,6 +56,212 @@
         linear-gradient(45deg, transparent 30%, rgba(255, 255, 255, 0.02) 31%, rgba(255, 255, 255, 0.02) 32%, transparent 33%);
 }
 
+/* Leaflet Map Styling */
+.leaflet-container {
+    background: #0a0a0a !important;
+    font-family: 'Arial', sans-serif;
+}
+
+.leaflet-control-container {
+    display: none; /* Hide default controls for cleaner look */
+}
+
+/* Dark theme enhancement for Leaflet tiles */
+.leaflet-tile-container {
+    filter: invert(1) hue-rotate(180deg) brightness(0.4) contrast(1.3) saturate(0.8);
+}
+
+.leaflet-tile {
+    filter: brightness(0.9) contrast(1.1);
+}
+
+/* Custom Cyber Markers */
+.cyber-marker {
+    background: transparent !important;
+    border: none !important;
+    position: relative;
+}
+
+.marker-inner {
+    position: relative;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.marker-number {
+    background: #ff4757;
+    color: white;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: bold;
+    font-family: 'Courier New', monospace;
+    position: relative;
+    z-index: 2;
+    border: 2px solid #ff3742;
+    box-shadow: 0 0 15px rgba(255, 71, 87, 0.6);
+}
+
+.marker-pulse {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 30px;
+    height: 30px;
+    border: 2px solid #ff4757;
+    border-radius: 50%;
+    opacity: 0.6;
+    animation: pulse-ring 2s ease-out infinite;
+}
+
+/* Team-specific marker colors */
+.cyber-marker.team-1 .marker-number { 
+    background: #ff4757;
+    border-color: #ff3742;
+    box-shadow: 0 0 15px rgba(255, 71, 87, 0.6);
+}
+
+.cyber-marker.team-1 .marker-pulse { 
+    border-color: #ff4757;
+}
+
+.cyber-marker.team-2 .marker-number { 
+    background: #ffa502;
+    border-color: #ff9500;
+    box-shadow: 0 0 15px rgba(255, 165, 2, 0.6);
+}
+
+.cyber-marker.team-2 .marker-pulse { 
+    border-color: #ffa502;
+}
+
+.cyber-marker.team-3 .marker-number { 
+    background: #2ed573;
+    border-color: #20bf6b;
+    box-shadow: 0 0 15px rgba(46, 213, 115, 0.6);
+}
+
+.cyber-marker.team-3 .marker-pulse { 
+    border-color: #2ed573;
+}
+
+.cyber-marker.team-4 .marker-number { 
+    background: #ffd700;
+    border-color: #ffcd00;
+    box-shadow: 0 0 15px rgba(255, 215, 0, 0.6);
+}
+
+.cyber-marker.team-4 .marker-pulse { 
+    border-color: #ffd700;
+}
+
+.cyber-marker.team-5 .marker-number { 
+    background: #a55eea;
+    border-color: #8b46e7;
+    box-shadow: 0 0 15px rgba(165, 94, 234, 0.6);
+}
+
+.cyber-marker.team-5 .marker-pulse { 
+    border-color: #a55eea;
+}
+
+/* Selected and highlighted states */
+.cyber-marker.selected .marker-number {
+    animation: selectedPulse 1s ease-in-out infinite;
+    transform: scale(1.2);
+}
+
+.cyber-marker.highlighted .marker-number {
+    animation: highlight-flash 0.5s ease-in-out 4;
+}
+
+@keyframes pulse-ring {
+    0% {
+        transform: translate(-50%, -50%) scale(1);
+        opacity: 0.6;
+    }
+    100% {
+        transform: translate(-50%, -50%) scale(2.5);
+        opacity: 0;
+    }
+}
+
+@keyframes selectedPulse {
+    0%, 100% {
+        transform: scale(1.2);
+        opacity: 1;
+    }
+    50% {
+        transform: scale(1.4);
+        opacity: 0.8;
+    }
+}
+
+@keyframes highlight-flash {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.3;
+    }
+}
+
+/* Cyber Popup Styling */
+.cyber-popup .leaflet-popup-content-wrapper {
+    background: rgba(12, 20, 39, 0.95);
+    border: 1px solid #16213e;
+    border-radius: 8px;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
+}
+
+.cyber-popup .leaflet-popup-content {
+    margin: 0;
+    padding: 0;
+}
+
+.cyber-popup .leaflet-popup-tip {
+    background: rgba(12, 20, 39, 0.95);
+    border: 1px solid #16213e;
+}
+
+.team-popup {
+    padding: 12px;
+    color: #ffffff;
+    font-family: 'Arial', sans-serif;
+    min-width: 200px;
+}
+
+.team-popup h3 {
+    margin: 0 0 8px 0;
+    color: #00d4ff;
+    font-size: 16px;
+    font-weight: bold;
+    border-bottom: 1px solid #16213e;
+    padding-bottom: 4px;
+}
+
+.team-popup p {
+    margin: 4px 0;
+    font-size: 12px;
+}
+
+.team-popup strong {
+    color: #00d4ff;
+}
+
+.status-low { color: #2ed573; }
+.status-medium { color: #ffa502; }
+.status-high { color: #ff4757; }
+
 .world-map-svg {
     width: 100%;
     height: 100%;

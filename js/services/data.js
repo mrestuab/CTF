@@ -31,8 +31,8 @@ export class DataService {
         this.teams = [
             {
                 id: 1,
-                name: 'Team Glend',
-                location: 'Tokyo, Japan',
+                name: 'Barudak Hilmi',
+                location: 'Ciwaruga, Indonesia',
                 coordinates: { lat: 35.6762, lng: 139.6503 },
                 ip: '192.168.1.101',
                 members: 5,
@@ -45,8 +45,8 @@ export class DataService {
             },
             {
                 id: 2,
-                name: 'Team Bona',
-                location: 'San Francisco, USA',
+                name: 'Barudak Farid',
+                location: 'Kebon Kopi, USA',
                 coordinates: { lat: 37.7749, lng: -122.4194 },
                 ip: '192.168.1.102',
                 members: 5,
@@ -59,8 +59,8 @@ export class DataService {
             },
             {
                 id: 3,
-                name: 'Team Arief',
-                location: 'Berlin, Germany',
+                name: 'Barudak Haekal',
+                location: 'Antapani, Korea',
                 coordinates: { lat: 52.5200, lng: 13.4050 },
                 ip: '192.168.1.103',
                 members: 5,
@@ -73,8 +73,8 @@ export class DataService {
             },
             {
                 id: 4,
-                name: 'Team Irfan',
-                location: 'Singapore',
+                name: 'Barudak Iki',
+                location: 'Batujajar, japan',
                 coordinates: { lat: 1.3521, lng: 103.8198 },
                 ip: '192.168.1.104',
                 members: 5,
@@ -87,8 +87,8 @@ export class DataService {
             },
             {
                 id: 5,
-                name: 'Team Deni',
-                location: 'Sydney, Australia',
+                name: 'Barudak Ferdy',
+                location: 'Padalarang, Australia',
                 coordinates: { lat: -33.8688, lng: 151.2093 },
                 ip: '192.168.1.105',
                 members: 5,

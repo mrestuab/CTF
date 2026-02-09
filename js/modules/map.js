@@ -1,100 +1,81 @@
 // Map Controller Module
-// Handles interactive world map rendering and team location visualization
+// Handles interactive world map rendering using Leaflet.js with cyber theme
 
 export class MapController {
     constructor(dataService) {
         this.dataService = dataService;
         this.mapCanvas = null;
-        this.svgElement = null;
+        this.leafletMap = null;
         this.markers = new Map();
         this.connections = [];
+        this.connectionLayers = [];
         this.isInitialized = false;
     }
 
     async init() {
-        console.log('🗺️ Initializing Map Controller...');
+        console.log('🗺️ Initializing Map Controller with Leaflet.js...');
         
         this.mapCanvas = document.getElementById('map-canvas');
         if (!this.mapCanvas) {
             throw new Error('Map canvas not found');
         }
         
-        await this.setupMap();
+        await this.setupLeafletMap();
         await this.renderTeamMarkers();
         this.setupEventListeners();
+        this.startNetworkAnimation();
         
         this.isInitialized = true;
         console.log('✅ Map Controller ready');
     }
 
-    async setupMap() {
-        // Create SVG element for the world map
-        this.svgElement = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-        this.svgElement.classList.add('world-map-svg');
-        this.svgElement.setAttribute('viewBox', '0 0 1000 500');
-        
-        // Create a simplified world map outline
-        await this.drawWorldOutline();
-        
-        this.mapCanvas.appendChild(this.svgElement);
-    }
-
-    async drawWorldOutline() {
-        // Simplified world map paths (basic continents)
-        const worldPaths = [
-            // North America
-            'M 100 100 Q 150 80 200 100 L 250 120 Q 280 140 250 180 L 200 200 Q 150 190 100 170 Z',
-            // South America
-            'M 180 220 Q 200 210 220 230 L 230 280 Q 225 320 210 340 L 190 350 Q 170 345 160 320 L 165 280 Q 170 240 180 220 Z',
-            // Europe
-            'M 450 120 Q 480 110 510 125 L 520 140 Q 515 155 500 160 L 480 155 Q 460 150 450 135 Z',
-            // Africa
-            'M 480 180 Q 520 170 540 200 L 550 260 Q 545 300 520 320 L 500 315 Q 480 310 470 280 L 475 240 Q 477 210 480 180 Z',
-            // Asia
-            'M 550 100 Q 650 90 750 110 L 800 130 Q 820 160 800 180 L 750 190 Q 700 185 650 180 L 600 175 Q 570 170 550 140 Z',
-            // Australia
-            'M 750 300 Q 800 295 830 310 L 835 330 Q 830 345 810 350 L 780 345 Q 760 340 750 325 Z'
-        ];
-
-        worldPaths.forEach((path, index) => {
-            const pathElement = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-            pathElement.setAttribute('d', path);
-            pathElement.setAttribute('fill', 'rgba(100, 100, 100, 0.3)');
-            pathElement.setAttribute('stroke', 'rgba(100, 100, 100, 0.5)');
-            pathElement.setAttribute('stroke-width', '1');
-            this.svgElement.appendChild(pathElement);
+    async setupLeafletMap() {
+        // Initialize Leaflet map with dark theme
+        this.leafletMap = L.map('map-canvas', {
+            center: [20, 0], // Center the world map
+            zoom: 2,
+            minZoom: 2,
+            maxZoom: 6,
+            zoomControl: false,
+            attributionControl: false,
+            dragging: true,
+            scrollWheelZoom: true,
+            doubleClickZoom: false
         });
 
-        // Add grid lines
-        this.addGridLines();
+        // Add dark tile layer for cyber theme
+        const darkTiles = L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+            attribution: '',
+            subdomains: 'abcd',
+            maxZoom: 19
+        });
+
+        darkTiles.addTo(this.leafletMap);
+
+        // Add custom CSS for cyber styling
+        this.applyCyberStyling();
     }
 
-    addGridLines() {
-        // Vertical lines
-        for (let i = 0; i <= 1000; i += 100) {
-            const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-            line.setAttribute('x1', i);
-            line.setAttribute('y1', 0);
-            line.setAttribute('x2', i);
-            line.setAttribute('y2', 500);
-            line.setAttribute('stroke', 'rgba(255, 255, 255, 0.1)');
-            line.setAttribute('stroke-width', '0.5');
-            this.svgElement.appendChild(line);
-        }
-
-        // Horizontal lines
-        for (let i = 0; i <= 500; i += 50) {
-            const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-            line.setAttribute('x1', 0);
-            line.setAttribute('y1', i);
-            line.setAttribute('x2', 1000);
-            line.setAttribute('y2', i);
-            line.setAttribute('stroke', 'rgba(255, 255, 255, 0.1)');
-            line.setAttribute('stroke-width', '0.5');
-            this.svgElement.appendChild(line);
-        }
+    applyCyberStyling() {
+        // Add custom cyber styling to the map
+        const mapContainer = this.leafletMap.getContainer();
+        mapContainer.style.background = '#0a0a0a';
+        mapContainer.style.border = '1px solid #333';
+        mapContainer.style.borderRadius = '8px';
+        
+        // Add custom CSS for the dark theme enhancement
+        const style = document.createElement('style');
+        style.textContent = `
+            .leaflet-container {
+                background: #0a0a0a !important;
+                filter: brightness(0.8) contrast(1.2) hue-rotate(180deg) invert(1);
+            }
+            .leaflet-tile {
+                filter: brightness(0.8) contrast(1.1) saturate(1.2);
+            }
+        `;
+        document.head.appendChild(style);
     }
-
     async renderTeamMarkers() {
         const teams = this.dataService.getTeams();
         
@@ -102,32 +83,59 @@ export class MapController {
             this.createTeamMarker(team);
         });
 
-        // Add connection lines between teams
-        this.drawConnectionLines(teams);
+        // Start network activity animation
+        this.drawConnectionLines();
     }
 
     createTeamMarker(team) {
-        // Convert lat/lng to SVG coordinates (simplified projection)
-        const x = ((team.coordinates.lng + 180) / 360) * 1000;
-        const y = ((90 - team.coordinates.lat) / 180) * 500;
-
-        // Create marker element
-        const marker = document.createElement('div');
-        marker.classList.add('map-marker', `team-${team.id}`);
-        marker.style.left = `${x}px`;
-        marker.style.top = `${y}px`;
-        marker.title = `${team.name} - ${team.location}`;
-
-        // Add click event
-        marker.addEventListener('click', () => {
-            this.selectTeam(team.id);
+        // Create custom marker icon with team number
+        const customIcon = L.divIcon({
+            className: `cyber-marker team-${team.id}`,
+            html: `
+                <div class="marker-inner">
+                    <div class="marker-number">${team.id}</div>
+                    <div class="marker-pulse"></div>
+                </div>
+            `,
+            iconSize: [30, 30],
+            iconAnchor: [15, 15],
+            popupAnchor: [0, -15]
         });
 
-        this.mapCanvas.appendChild(marker);
+        // Create marker
+        const marker = L.marker([team.coordinates.lat, team.coordinates.lng], {
+            icon: customIcon,
+            title: `${team.name} - ${team.location}`
+        });
+
+        // Create popup content
+        const popupContent = `
+            <div class="team-popup">
+                <h3>${team.name}</h3>
+                <p><strong>Location:</strong> ${team.location}</p>
+                <p><strong>IP:</strong> ${team.ip}</p>
+                <p><strong>Members:</strong> ${team.members}</p>
+                <p><strong>Status:</strong> <span class="status-${team.status.toLowerCase()}">${team.status}</span></p>
+                <p><strong>Progress:</strong> ${team.progress}%</p>
+            </div>
+        `;
+
+        marker.bindPopup(popupContent, {
+            className: 'cyber-popup',
+            maxWidth: 250
+        });
+
+        // Add click event
+        marker.on('click', () => {
+            this.selectTeam(team.id);
+            this.updateCoordinatesDisplay(team.coordinates);
+        });
+
+        marker.addTo(this.leafletMap);
         this.markers.set(team.id, marker);
     }
 
-    drawConnectionLines(teams) {
+    drawConnectionLines() {
         // Clear existing connections
         this.clearConnections();
 
@@ -139,64 +147,82 @@ export class MapController {
     }
 
     drawConnection(source, target, type) {
-        const sourceX = ((source.lng + 180) / 360) * 1000;
-        const sourceY = ((90 - source.lat) / 180) * 500;
-        const targetX = ((target.lng + 180) / 360) * 1000;
-        const targetY = ((90 - target.lat) / 180) * 500;
-
-        const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-        line.setAttribute('x1', sourceX);
-        line.setAttribute('y1', sourceY);
-        line.setAttribute('x2', targetX);
-        line.setAttribute('y2', targetY);
-        line.setAttribute('stroke', type === 'attack' ? '#ff4757' : '#00d4ff');
-        line.setAttribute('stroke-width', type === 'attack' ? '2' : '1');
-        line.setAttribute('opacity', '0.6');
-        line.classList.add('connection-line');
+        const color = type === 'attack' ? '#ff4757' : '#00d4ff';
+        const weight = type === 'attack' ? 3 : 2;
         
-        // Add animation
-        line.style.strokeDasharray = '5,5';
-        line.style.animation = 'flow 2s linear infinite';
+        // Create animated line
+        const connection = L.polyline([
+            [source.lat, source.lng],
+            [target.lat, target.lng]
+        ], {
+            color: color,
+            weight: weight,
+            opacity: 0.7,
+            className: `connection-line ${type}`,
+            dashArray: '10, 10'
+        });
 
-        this.svgElement.appendChild(line);
-        this.connections.push(line);
+        connection.addTo(this.leafletMap);
+        this.connectionLayers.push(connection);
+
+        // Animate the connection
+        this.animateConnection(connection);
 
         // Remove line after animation
         setTimeout(() => {
-            if (line.parentNode) {
-                line.parentNode.removeChild(line);
-                const index = this.connections.indexOf(line);
+            if (this.leafletMap.hasLayer(connection)) {
+                this.leafletMap.removeLayer(connection);
+                const index = this.connectionLayers.indexOf(connection);
                 if (index > -1) {
-                    this.connections.splice(index, 1);
+                    this.connectionLayers.splice(index, 1);
                 }
             }
-        }, 3000);
+        }, 4000);
+    }
+
+    animateConnection(connection) {
+        let offset = 0;
+        const animate = () => {
+            offset -= 2;
+            if (connection._path) {
+                connection._path.style.strokeDashoffset = offset;
+            }
+        };
+        
+        const interval = setInterval(animate, 100);
+        setTimeout(() => clearInterval(interval), 4000);
     }
 
     clearConnections() {
-        this.connections.forEach(connection => {
-            if (connection.parentNode) {
-                connection.parentNode.removeChild(connection);
+        this.connectionLayers.forEach(layer => {
+            if (this.leafletMap.hasLayer(layer)) {
+                this.leafletMap.removeLayer(layer);
             }
         });
-        this.connections = [];
+        this.connectionLayers = [];
     }
 
     selectTeam(teamId) {
         // Clear previous selections
-        this.markers.forEach(marker => {
+        document.querySelectorAll('.cyber-marker').forEach(marker => {
             marker.classList.remove('selected');
         });
 
         // Select new team
         const marker = this.markers.get(teamId);
         if (marker) {
-            marker.classList.add('selected');
+            const markerElement = marker.getElement();
+            if (markerElement) {
+                markerElement.classList.add('selected');
+            }
             
-            // Update coordinates display
+            // Center map on selected team
             const team = this.dataService.getTeam(teamId);
             if (team) {
-                this.updateCoordinatesDisplay(team.coordinates);
+                this.leafletMap.panTo([team.coordinates.lat, team.coordinates.lng], {
+                    animate: true,
+                    duration: 1
+                });
             }
         }
     }
@@ -212,8 +238,7 @@ export class MapController {
         if (!this.isInitialized) return;
         
         // Redraw connection lines with new activity
-        const teams = this.dataService.getTeams();
-        this.drawConnectionLines(teams);
+        this.drawConnectionLines();
 
         // Update packet counter
         const stats = this.dataService.getGlobalStats();
@@ -223,44 +248,56 @@ export class MapController {
         }
     }
 
+    startNetworkAnimation() {
+        // Start continuous network activity animation
+        setInterval(() => {
+            this.updateActivity();
+        }, 3000);
+    }
+
     setupEventListeners() {
-        // Handle map canvas click for coordinate display
-        this.mapCanvas.addEventListener('click', (event) => {
-            if (event.target === this.mapCanvas || event.target === this.svgElement) {
-                const rect = this.mapCanvas.getBoundingClientRect();
-                const x = event.clientX - rect.left;
-                const y = event.clientY - rect.top;
-                
-                // Convert back to lat/lng (simplified)
-                const lng = ((x / this.mapCanvas.offsetWidth) * 360) - 180;
-                const lat = 90 - ((y / this.mapCanvas.offsetHeight) * 180);
-                
-                this.updateCoordinatesDisplay({ lat, lng });
+        // Handle map click for coordinate display
+        this.leafletMap.on('click', (e) => {
+            this.updateCoordinatesDisplay(e.latlng);
+        });
+
+        // Handle marker hover effects
+        this.leafletMap.on('mouseover', (e) => {
+            if (e.layer.options && e.layer.options.title) {
+                // Additional hover effects can be added here
             }
         });
     }
 
     handleResize() {
-        // Handle window resize - update marker positions if needed
-        if (this.isInitialized) {
-            // Could implement responsive marker repositioning here
-            console.log('🔄 Map resize handled');
+        if (this.isInitialized && this.leafletMap) {
+            // Invalidate map size to handle container resize
+            setTimeout(() => {
+                this.leafletMap.invalidateSize();
+            }, 100);
         }
     }
 
     // Public API methods
-    zoomTo(coordinates, zoomLevel = 1) {
-        // Could implement zooming functionality
-        console.log(`🔍 Zooming to ${coordinates.lat}, ${coordinates.lng}`);
+    zoomTo(coordinates, zoomLevel = 4) {
+        if (this.leafletMap) {
+            this.leafletMap.setView([coordinates.lat, coordinates.lng], zoomLevel, {
+                animate: true,
+                duration: 1
+            });
+        }
     }
 
     highlightTeam(teamId) {
         const marker = this.markers.get(teamId);
         if (marker) {
-            marker.style.transform = 'scale(1.5)';
-            setTimeout(() => {
-                marker.style.transform = 'scale(1)';
-            }, 2000);
+            const markerElement = marker.getElement();
+            if (markerElement) {
+                markerElement.classList.add('highlighted');
+                setTimeout(() => {
+                    markerElement.classList.remove('highlighted');
+                }, 2000);
+            }
         }
     }
 }
